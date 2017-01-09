@@ -74,7 +74,7 @@ class Options
 end
 
 class TimeSheet
-  attr_accessor :trunk_to, :month, :year
+  attr_accessor :trunk_to, :month
 
   def initialize(ts_file)
     @ts_file = ts_file
@@ -131,15 +131,13 @@ class TimeSheet
 
   # Read working hours calendar
   #
-  def read_calendar(year=@year)
+  def read_calendar
     calendar_file = find_calendar
     if calendar_file
       calendar = Hash.new
       IO.read(calendar_file).each_line do |line|
-        y, month, work_days = line.split(':')
-        if year == y.to_i
-            calendar[month.to_i] = work_days.to_i
-        end
+        month, work_days = line.split(':')
+        calendar[month.to_i] = work_days.to_i
       end
       calendar
     else
@@ -426,7 +424,6 @@ options = opt.parse
 ts = TimeSheet.new(ARGV[-1])
 
 ts.trunk_to = options[:trunk_to] if options[:trunk_to]
-ts.year = ts.year - 1 if options[:month] and options[:month] > ts.month
 ts.month = options[:month] if options[:month]
 
 reported = false
